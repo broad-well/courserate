@@ -2,7 +2,6 @@
 	<title>CourseRate - Home</title>
 </svelte:head>
 
-<main>
 	{#if $state.me != undefined}
 		<h2>Welcome, {$state.me.name}!</h2>
 		<div class="grid-container">
@@ -16,7 +15,6 @@
 	{:else}
 		Loading... Hold tight!
 	{/if}
-</main>
 
 <script>
 	import { state } from '../client/store';

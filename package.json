@@ -6,7 +6,7 @@
     "dev": "sapper dev --port 5000",
     "build": "sapper build --legacy",
     "export": "sapper export --legacy",
-    "start": "node __sapper__/build"
+    "start": "PORT=80 node __sapper__/build"
   },
   "dependencies": {
     "@azure/cosmos": "^3.7.2",

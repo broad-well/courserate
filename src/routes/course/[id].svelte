@@ -1,4 +1,4 @@
-<main class="course">
+
     <div class="course-hero">
     {#if course == undefined}
     Loading... Hold tight!
@@ -35,16 +35,16 @@
 
 <mwc-dialog heading="Write a Review" bind:this={reviewDialog}>
     <div>
-        <mwc-textarea bind:this={reviewText} rows="7"
-            placeholder="Your review of {course == undefined ? '<unknown>' : course.name}..."
-            fullwidth />
-        
         <ul>
             <li>You are writing to students deciding whether to take this course.
                 They usually have no control over what teacher they get.
                 <b>Review the course, not the teacher(s).</b></li>
             <li>What advice would you give someone who is about to take this course?</li>
         </ul>
+        <mwc-textarea bind:this={reviewText} rows="7"
+            placeholder="Your review of {course == undefined ? '<unknown>' : course.name}..."
+            fullwidth />
+        
     </div>
     <mwc-button slot="secondaryAction" dialogAction="discard" label="Discard"
         icon="delete" on:click={() => { reviewText.value = ''; reviewDialog.close()}}/>
@@ -58,7 +58,6 @@
 {/each}
 </div>
 {/if}
-</main>
 
 <ErrorSnackbar error={error} bind:this={errorBar} />
 
@@ -156,7 +155,7 @@
     .course-hero {
         margin: 5px;
         padding: 20px;
-        background-color: #4B78BC;
+        background-color: #375D95;
         color: aliceblue;
         border-radius: 5px;
         position: relative;

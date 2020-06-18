@@ -17,6 +17,7 @@ export interface DisplayReview {
     upvotes: number;
     downvotes: number;
     flagged: boolean;
+    level?: string;
 }
 
 export interface ICourseRate {
@@ -74,8 +75,9 @@ export default class CourseRate implements ICourseRate {
             post_time: r.postTime,
             upvotes: r.upvotes,
             downvotes: r.downvotes,
-            flagged: r.flagger !== undefined
-        }
+            flagged: r.flagger !== undefined,
+            level: r.reviewerLevel
+        };
     }
 
     private async displayCourse(c: Course): Promise<DisplayCourse> {

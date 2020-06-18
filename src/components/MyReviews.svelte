@@ -11,7 +11,7 @@
         {#await get(`/api/review/info/${reviewId}`)}
             <span>Loading review...</span>
         {:then review}
-            <Review {review} showCourse/>
+            <Review {review} showCourse showReport={false} />
         {/await}
     </div>
     {:else}

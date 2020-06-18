@@ -12,12 +12,19 @@
     {/if}
     </div>
     <div class="review-text">
+        {#if review.level}
+        <div class="review-level">
+            Review of <b>{review.level}</b>
+        </div>
+        {/if}
         {review.text}
         <div class="review-timestamp">
-            Posted {reviewPostTime(review)}
+            Posted {reviewPostTime(review)} &CenterDot; 
             {#if showCourse}
-                <br>
-                <a href="/course/{review.courseId}" style="text-decoration: underline">View Course</a>
+                <a href="/course/{review.courseId}" class="review-action">View Course</a>
+            {/if}
+            {#if showReport}
+                <span class="review-action">Report Abuse</span>
             {/if}
         </div>
     </div>
@@ -30,6 +37,7 @@ import { createEventDispatcher } from 'svelte';
 
 export let review;
 export let showCourse = false;
+export let showReport = true;
 let score = review.upvotes - review.downvotes;
 
 const dispatch = createEventDispatcher();
@@ -90,10 +98,21 @@ function removeReview(review) {
 .review-delete {
     margin-top: 4px;
 }
+.review-level {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 2px;
+}
 .review-timestamp {
     font-size: 12px;
     color: #666;
-    margin-top: 5px;
+    margin-top: 10px;
+}
+.review-action {
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 3px;
+    margin-right: 3px;
 }
 
 .counter-container {
@@ -102,7 +121,7 @@ function removeReview(review) {
     align-items: center;
     --mdc-icon-size: 20px;
     --mdc-icon-button-size: 24px;
-    width: 50px;
+    width: 35px;
 }
 mwc-icon-button {
     border-radius: 100%;
