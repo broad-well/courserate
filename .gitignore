@@ -1,3 +1,12 @@
+/.git
+/.pytest_cache
+/.vscode
+/__sapper__
+/courses.csv
+/courses.json
+/load_courses.py
+/node_modules
+
 .DS_Store
 /node_modules/
 /src/node_modules/@sapper/

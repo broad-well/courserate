@@ -96,7 +96,9 @@ export default class CosmosStore implements Store {
         return (await this.db.container('Users').item(email, email).read<User>()).resource;
     }
     async upsertUser(user: User): Promise<void> {
-        const response = await this.db.container('Users').items.upsert(user);
+        const databaseItem = {};
+        Object.assign(databaseItem, user, {id: user.email});
+        const response = await this.db.container('Users').items.upsert(databaseItem);
         this.checkResponse(response);
     }
 

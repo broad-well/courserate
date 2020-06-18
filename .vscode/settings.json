@@ -4,5 +4,8 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "appService.showBuildDuringDeployPrompt": false,
+    "appService.defaultWebAppToDeploy": "/subscriptions/437a255f-3d42-4588-91f9-86299850a335/resourceGroups/CourseRate/providers/Microsoft.Web/sites/courserate",
+    "appService.deploySubpath": "."
 }
