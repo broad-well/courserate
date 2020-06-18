@@ -11,37 +11,26 @@
 	<link rel='manifest' href='manifest.json' crossorigin='use-credentials'>
 	<link rel='icon' type='image/png' href='favicon.png'>
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,400i,500,700" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">
+	
+	%sapper.styles%
+	%sapper.head%
+
 	<style>
-		* {
-			font-family: Roboto,Helvetica,sans-serif;
+		*:not(mwc-icon) {
+			font-family: Roboto Slab, Helvetica,sans-serif;
 		}
 		html {
 			--mdc-theme-primary: #0A4091;
 			--mdc-theme-secondary: #E09526;
 		}
+		
 	</style>
-	
-	<!-- Sapper generates a <style> tag containing critical CSS
-	     for the current page. CSS for the rest of the app is
-	     lazily loaded when it precaches secondary pages -->
-	%sapper.styles%
-
-	<!-- This contains the contents of the <svelte:head> component, if
-	     the current page has one -->
-	%sapper.head%
 </head>
 <body>
-	<!-- The application will be rendered inside this element,
-	     because `src/client.js` references it -->
 	<div id='sapper'>%sapper.html%</div>
-
-	<!-- Sapper creates a <script> tag containing `src/client.js`
-	     and anything else it needs to hydrate the app and
-	     initialise the router -->
 	%sapper.scripts%
-
 	<script type="module">
 	</script>
 </body>

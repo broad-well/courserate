@@ -1,7 +1,8 @@
 async function handleError(response) {
     if (!response.ok) {
-        const message = (await response.json())['message'];
+        const message = (await response.json())['error'];
         alert(message);
+        window.location.href = '/';
         throw new Error(message);
     }
     return await response.json();

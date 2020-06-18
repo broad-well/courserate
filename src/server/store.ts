@@ -5,7 +5,7 @@ export default interface Store {
     upsertUser(user: User): Promise<void>;
 
     getCourse(id: string): Promise<Course|undefined>;
-    searchCourses(domain: string, query: string, pageSize?: number, pageNum?: number): Promise<{id: string, name: string}[]>;
+    searchCourses(domain: string, query: string, pageSize?: number, pageNum?: number): Promise<Course[]>;
     upsertCourse(course: Course): Promise<void>;
 
     userReviews(userEmail: string, pageSize?: number, pageNum?: number): Promise<Review[]>;

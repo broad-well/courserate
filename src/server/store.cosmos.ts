@@ -35,7 +35,7 @@ export default class CosmosStore implements Store {
         await this.db.container('RemovedReviews').items.upsert(review);
     }
 
-    async searchCourses(domain: string, query: string, pageSize: number = 40, pageNum: number = 0): Promise<{ id: string; name: string; }[]> {
+    async searchCourses(domain: string, query: string, pageSize: number = 40, pageNum: number = 0): Promise<Course[]> {
         const {results} = await this.searchClient.search(query, {
             filter: `schoolDomain eq '${domain}'`,
             top: pageSize,

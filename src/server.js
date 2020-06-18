@@ -19,8 +19,14 @@ const app = new CourseRate(new CosmosStore());
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
 
-const succeed = (res, msg) => res.end(JSON.stringify({message: msg}));
-const fail = (res, err) => res.end(JSON.stringify({error: err.toString()}));
+const succeed = (res, msg) => {
+	res.writeHead(200, {'Content-Type': 'application/json'});
+	res.end(JSON.stringify({message: msg}));
+}
+const fail = (res, err) => {
+	res.writeHead(400, {'Content-Type': 'application/json'});
+	res.end(JSON.stringify({error: err.toString()}));
+}
 
 const login = (req, email) => req.session.email = email;
 const logout = (req) => delete req.session.email;
@@ -28,6 +34,10 @@ const userEmail = req => req.session.email;
 const requiresLogin = (req, res, next) => {
 	const email = userEmail(req);
 	if (email == undefined) {
+		if (req.url.startsWith('/api')) {
+			fail(res, 'You need to sign in again');
+			return;
+		}
 		redirect(res, 302, '/welcome');
 	} else {
 		req.email = email;
@@ -36,7 +46,10 @@ const requiresLogin = (req, res, next) => {
 }
 const failable = (req, res, next) => {
 	try {
-		next();
+		next().catch(error => {
+			console.error(error);
+			fail(res, error);
+		});
 	} catch (e) {
 		fail(res, e);
 	}
@@ -45,7 +58,7 @@ const failable = (req, res, next) => {
 
 polka() // You can also use Express
 	.use(cookieSession({
-		name: 'session',
+		name: 'cr_session',
 		keys: [SESSION_KEY],
 		secure: !dev,
 		sameSite: "strict"
@@ -60,7 +73,8 @@ polka() // You can also use Express
 
 		} catch (e) {
 			res.statusCode = 403;
-			fail(res, e);
+			// res.cookie('cr-flash', e.toString(), { maxAge: 10 * 1000 });
+			redirect(res, '/welcome');
 		}
 	})
 
@@ -80,7 +94,7 @@ polka() // You can also use Express
 		</head>
 		<body>
 			<div id="g_id_onload"
-				data-client_id="938003961167-i6pfeu8n7acup9h26sk3mik23bm3q9ok"
+				data-client_id="938003961167-i6pfeu8n7acup9h26sk3mik23bm3q9ok.apps.googleusercontent.com"
 				data-login_uri="/login">
 			</div>
 			<script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -168,7 +182,7 @@ polka() // You can also use Express
 		requiresLogin,
 		failable
 	], async (req, res) => {
-		const course = await app.course(req.params.id);
+		const course = await app.course(req.email, req.params.id);
 		res.end(JSON.stringify(course));
 	})
 
@@ -176,9 +190,16 @@ polka() // You can also use Express
 		requiresLogin,
 		failable
 	], async (req, res) => {
-		// TODO block if different domain
-		const results = await app.courseReviews(req.params.id);
+		const results = await app.courseReviews(req.email, req.params.id);
 		res.end(JSON.stringify(results));
+	})
+
+	.get('/api/review/info/:id', [
+		requiresLogin,
+		failable
+	], async (req, res) => {
+		const review = await app.review(req.email, req.params.id);
+		res.end(JSON.stringify(review));
 	})
 
 	.get('/api/me', [
@@ -189,6 +210,7 @@ polka() // You can also use Express
 	})
 
 	.use(
+		requiresLogin,
 		compression({ threshold: 0 }),
 		sirv('static', { dev }),
 		sapper.middleware()

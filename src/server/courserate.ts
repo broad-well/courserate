@@ -1,5 +1,5 @@
 import { Review, Course, User, Vote } from "./types";
-import shortid from 'shortid';
+import nanoid from 'nanoid';
 
 export interface DisplayCourse {
     id: string;
@@ -11,6 +11,7 @@ export interface DisplayCourse {
 
 export interface DisplayReview {
     id: string;
+    courseId: string;
     text: string;
     post_time: number;
     upvotes: number;
@@ -20,12 +21,13 @@ export interface DisplayReview {
 
 export interface ICourseRate {
     // Reading
-    searchCourses(schoolDomain: string, query: string): Promise<{id: string, name: string}[]>; // FS: 8
-    courseReviews(courseId: string, pageSize?: number, pageNum?: number): Promise<DisplayReview[]>; // FS: 7
-    course(courseId: string): Promise<DisplayCourse>; // FS: 7
+    searchCourses(schoolDomain: string, query: string): Promise<DisplayCourse[]>; // FS: 8
+    courseReviews(userEmail: string, courseId: string, pageSize?: number, pageNum?: number): Promise<DisplayReview[]>; // FS: 7
+    course(userEmail: string, courseId: string): Promise<DisplayCourse>; // FS: 7
     ownReviews(userEmail: string, pageSize?: number, pageNum?: number): Promise<Review[]>; // FS: 3
     isSchoolDomain(domain: string): Promise<boolean>; // FS: 10
     user(email: string): Promise<User|undefined>;
+    review(userEmail: string, reviewId: string): Promise<DisplayReview>;
 
     // Writing
     joinCourse(userEmail: string, courseId: string, level?: string): Promise<void>;
@@ -35,6 +37,8 @@ export interface ICourseRate {
     downvoteReview(userEmail: string, reviewId: string): Promise<void>; // FS: 2
     setCourseStar(userEmail: string, courseId: string, star: boolean): Promise<void>; // FS: 4
     registerUserIfNotExists(email: string, name: string): Promise<User>;
+
+    emailDomain(email: string): string;
 }
 
 import _ from 'lodash';
@@ -47,11 +51,17 @@ export default class CourseRate implements ICourseRate {
         this.store = store;
     }
 
-    searchCourses(schoolDomain: string, query: string): Promise<{id: string, name: string}[]> {
-        return this.store.searchCourses(schoolDomain, query);
+    async searchCourses(schoolDomain: string, query: string): Promise<DisplayCourse[]> {
+        const courses = await this.store.searchCourses(schoolDomain, query);
+        const output = [];
+        for (const course of courses) {
+            output.push(await this.displayCourse(course));
+        }
+        return output;
     }
 
-    async courseReviews(courseId: string, pageSize?: number, pageNum?: number): Promise<DisplayReview[]> {
+    async courseReviews(userEmail: string, courseId: string, pageSize?: number, pageNum?: number): Promise<DisplayReview[]> {
+        await this.course(userEmail, courseId); // To check perms
         const results = await this.store.topCourseReviews(courseId, pageSize, pageNum);
         return results.map(this.displayReview);
     }
@@ -59,6 +69,7 @@ export default class CourseRate implements ICourseRate {
     private displayReview(r: Review): DisplayReview {
         return {
             id: r.id,
+            courseId: r.courseId,
             text: r.text,
             post_time: r.postTime,
             upvotes: r.upvotes,
@@ -67,23 +78,37 @@ export default class CourseRate implements ICourseRate {
         }
     }
 
-    async course(courseId: string): Promise<DisplayCourse> {
+    private async displayCourse(c: Course): Promise<DisplayCourse> {
+        return {
+            id: c.id,
+            name: c.name,
+            school: await this.store.schoolName(c.schoolDomain),
+            student_count: c.enrollCount,
+            levels: c.levels
+        };
+    }
+
+    async course(userEmail: string, courseId: string): Promise<DisplayCourse> {
         const result = await this.store.getCourse(courseId);
         if (result == undefined) throw new Error(`no such course with ID ${courseId}`);
-        
-        return {
-            id: result.id,
-            name: result.name,
-            school: await this.store.schoolName(result.schoolDomain),
-            student_count: result.enrollCount,
-            levels: result.levels
-        }
+        if (result.schoolDomain !== this.emailDomain(userEmail)) throw new Error(`This course belongs to a different school`);
+
+        return await this.displayCourse(result);
     }
 
     async user(email: string): Promise<User> {
         const out = await this.store.getUser(email);
         if (out == undefined) throw new Error(`no user with email ${email}`);
         return out;
+    }
+
+    async review(email: string, reviewId: string): Promise<DisplayReview> {
+        const review = await this.store.getReview(reviewId);
+        if (review == undefined) throw new Error(`No review with ID ${reviewId} found`);
+        if ((await this.store.getCourse(review.courseId)).schoolDomain !== this.emailDomain(email))
+            throw new Error(`This review does not belong to your school`);
+
+        return this.displayReview(review);
     }
 
     ownReviews(userEmail: string, pageSize?: number, pageNum?: number): Promise<Review[]> {
@@ -104,7 +129,7 @@ export default class CourseRate implements ICourseRate {
         const reviewerLevel = user.coursesTaken[courseId].level;
 
         const review: Review = {
-            id: shortid.generate(),
+            id: nanoid.nanoid(12),
             courseId,
             text,
             reviewerEmail: userEmail,
@@ -223,6 +248,10 @@ export default class CourseRate implements ICourseRate {
         const user = await this.store.getUser(email);
 
         if (user == undefined) {
+            const userDomain = this.emailDomain(email);
+            if (!await this.store.isSchoolDomain(userDomain)) {
+                throw new Error(`I don't recognize ${userDomain} as a valid school domain`);
+            }
             const newUser: User = {
                 email: email,
                 name: name,
@@ -236,6 +265,10 @@ export default class CourseRate implements ICourseRate {
         }
 
         return user;
+    }
+
+    emailDomain(email: string): string {
+        return email.split('@')[1];
     }
 
     private scoreReview(review: Review): number {

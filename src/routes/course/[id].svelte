@@ -1,42 +1,42 @@
-<div class="course">
-<div class="course-hero">
-{#if course == undefined}
+<main class="course">
+    <div class="course-hero">
+    {#if course == undefined}
     Loading... Hold tight!
-{:else}
-
+    {:else}
     <i>{course.school}</i>
     <div style="display: flex; flex-direction: row; align-items: center">
         <h2>{course.name}</h2>
         <mwc-icon-button-toggle onIcon="star" offIcon="star_border"
             bind:this={courseStar} on:click={courseStarUpdate} />
     </div>
-    <p>{course.student_count} student(s) have taken this course
+    <p>
+        {course.student_count} student(s) have taken this course
         <br>
-        You <b>have {course.id in $state.me.coursesTaken ? '' : 'not '}</b> taken this course.
+        You have {course.id in $state.me.coursesTaken ? '' : 'not '} taken this course.
     </p>
     {#if course.id in $state.me.coursesTaken}
-        <mwc-fab class="course-actions" icon="edit" extended={true} label="Write a Review" on:click={() => reviewDialog.show()} />
+        <mwc-fab class="course-actions" icon="edit" extended={true}
+            label="Write a Review" on:click={() => reviewDialog.show()} />
     {:else}
-        <mwc-fab class="course-actions" icon="person_add" extended={true} label="Join Course" on:click={clickJoin} />
+        <mwc-fab class="course-actions" icon="person_add" extended={true}
+            label="Join Course Alumni" on:click={clickJoin} />
     {/if}
-{/if}
+    {/if}
 </div>
 
 {#if course != undefined}
 <mwc-dialog heading={'Join ' + course.name} bind:this={joinDialog}>
-    <mwc-select label="Your level" bind:this={joinLevelSelect}>
-        {#each course.levels as level}
-            <mwc-list-item value={level}>{level}</mwc-list-item>
-        {/each}
-    </mwc-select>
-    <mwc-button slot="primaryAction" dialogAction="join" label="Join" icon="person_add"
-        on:click={joinCourse}/>
+    {#each course.levels as level}
+        <mwc-list-item value={level} on:click={() => joinCourse(level)}>{level}</mwc-list-item>
+    {/each}
+    <mwc-button slot="secondaryAction" dialogAction="cancel"
+        label="Cancel" icon="cancel" />
 </mwc-dialog>
 
 <mwc-dialog heading="Write a Review" bind:this={reviewDialog}>
     <div>
-        <mwc-textarea bind:this={reviewText}
-            label="Your review of {course == undefined ? '<unknown>' : course.name}"
+        <mwc-textarea bind:this={reviewText} rows="7"
+            placeholder="Your review of {course == undefined ? '<unknown>' : course.name}..."
             fullwidth />
         
         <ul>
@@ -54,30 +54,11 @@
 
 <div class="reviews">
 {#each reviews as review}
-    <div class="review">
-        <div class="counter-container">
-            <mwc-icon-button icon="expand_less" on:click={() => upvoteReview(review)}
-                selected={review.my_vote === 'up' ? true : null} disabled={review.my_vote} />
-            <span class="counter">{review.upvotes - review.downvotes}</span>
-            <mwc-icon-button icon="expand_more" on:click={() => downvoteReview(review)}
-                selected={review.my_vote === 'down' ? true : null} disabled={review.my_vote} />
-        {#if review.mine}
-            <div class="review-delete">
-                <mwc-icon-button icon="delete" on:click={() => removeReview(review)} />
-            </div>
-        {/if}
-        </div>
-        <div class="review-text">
-            {review.text}
-        </div>
-        <div class="review-timestamp">
-            Posted {reviewPostTime(review)}
-        </div>
-    </div>
+    <Review {review} on:remove={() => removeReview(review)} />
 {/each}
 </div>
 {/if}
-</div>
+</main>
 
 <ErrorSnackbar error={error} bind:this={errorBar} />
 
@@ -93,6 +74,7 @@
     export let id;
 
     import ErrorSnackbar from '../../components/ErrorSnackbar.svelte';
+    import Review from '../../components/Review.svelte';
 
     import { get, post } from '../../transport';
     import { onMount } from 'svelte';
@@ -107,13 +89,12 @@
         get(`/api/course/${id}/reviews`).then(r => reviews = r);
     }
     onMount(() => {
-        get(`/api/course/${id}`).then(c => course = c);
+        get(`/api/course/${id}`).then(c => course = c).then(() => {
+            courseStar.on = $state.me.starredCourses.indexOf(course.id) !== -1;
+        });
         loadReviews();
     });
 
-    function reviewPostTime(review) {
-        return new Date(review.post_time * 1000).toLocaleString('en-us');
-    }
 
     let reviewDialog, reviewText;
     let courseStar;
@@ -132,63 +113,30 @@
         if (showJoinDialog) {
             joinDialog.show();
         } else {
-            joinCourse();
+            joinCourse(undefined);
         }
     }
-    function joinCourse() {
-        const level = joinLevelSelect.value == '' || joinLevelSelect.value == undefined ? undefined : joinLevelSelect.value;
+    function joinCourse(level) {
+        if (joinDialog != undefined) joinDialog.close();
         post('/api/course/join', {id: course.id, level})
-            .then(() => {
-                // TODO allow user to indicate level
-                state.update(s => {
-                    s.me.coursesTaken[course.id] = {level};
-                })
-            });
+            .then(() => state.update(s => {
+                s.me.coursesTaken[course.id] = {level};
+                return s;
+            }))
+            .then(() => course = course);
     }
     function submitReview(content) {
         post('/api/review/add', {course_id: course.id, content: content})
             .then(response => {
-                reviews.unshift(response);
+                reviews = [response, ...reviews];
                 state.update(s => {
                     s.me.reviews.push(response.id);
                     return s;
                 });
             });
     }
-    function upvoteReview(review) {
-        if ($state.me.votes[review.id] != null) return;
-        post('/api/review/upvote', {id: review.id})
-            .then(() => {
-                review.upvotes += 1;
-                state.update(s => {
-                    s.me.votes[review.id] = 1;
-                    return s;
-                });
-            });
-    }
-    function downvoteReview(review) {
-        if ($state.me.votes[review.id] != null) return;
-        post('/api/review/downvote', {id: review.id})
-            .then(() => {
-                review.downvotes += 1;
-                state.update(s => {
-                    s.me.votes[review.id] = -1;
-                    return s;
-                });
-            });
-    }
     function removeReview(review) {
-        post('/api/review/remove', {id: review.id})
-            .then(() => {
-                reviews = reviews.filter(it => it.id !== review.id)
-                state.update(s => {
-                    const i = s.me.reviews.indexOf(review.id);
-                    if (i !== -1) {
-                        s.me.reviews.splice(i, 1);
-                    }
-                    return s;
-                });
-            });
+        reviews = reviews.filter(it => it.id !== review.id);
     }
 </script>
 
@@ -205,11 +153,6 @@
             margin: 15px 0;
         }
     }
-    .course {
-        padding: 15px;
-        max-width: 800px;
-        margin: 5px auto;
-    }
     .course-hero {
         margin: 5px;
         padding: 20px;
@@ -222,39 +165,5 @@
         position: absolute;
         right: 15px;
         bottom: -24px;
-    }
-    .counter-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        --mdc-icon-size: 20px;
-        --mdc-icon-button-size: 24px;
-        width: 60px;
-    }
-    .review {
-        display: flex;
-        align-items: center;
-        padding: 14px;
-    }
-    .review-text {
-        padding: 10px;
-    }
-    .review-delete {
-        margin-top: 4px;
-    }
-    .review-timestamp {
-        text-align: right;
-        font-size: 12px;
-        color: #666;
-    }
-    mwc-button.inverted {
-        --mdc-theme-on-primary: var(--mdc-theme-primary);
-        --mdc-theme-primary: #dedede;
-    }
-    mwc-icon-button {
-        border-radius: 100%;
-    }
-    mwc-icon-button[selected] {
-        background-color: #ddd;
     }
 </style>

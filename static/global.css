@@ -1,5 +1,4 @@
 body {
-	font-family: Roboto, sans-serif;
 	margin: 0 0;
 }
 
@@ -10,4 +9,34 @@ a, a:hover, a:visited, a:active {
 
 .row {
 	display: flex;
+}
+
+.row.vcenter {
+	flex-direction: row;
+	align-items: center;
+}
+
+.column {
+	display: flex;
+	flex-direction: column;
+}
+
+div.card {
+	background-color: white;
+	border-radius: 3px;
+	margin: 10px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+	min-width: 300px;
+	/* border: 1px solid #ccc; */
+}
+div.card h3, div.card p {
+	padding: 20px;
+	margin: 0;
+}
+
+
+main {
+	padding: 15px;
+	max-width: 800px;
+	margin: 5px auto;
 }
