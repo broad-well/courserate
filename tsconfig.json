@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "baseUrl": "./",
+        "types": [
+            "@pyoner/svelte-types"
+        ],
+        "esModuleInterop": true,
+        "moduleResolution": "node"
+    },
+    "include": [
+        "src/**/*"
+    ]
+}

@@ -1,0 +1,2 @@
+https://coolors.co/e09526-eda231-4b78bc-196dea-0a4091
+{"Harvest Gold":"e09526","Marigold":"eda231","Glaucous":"4b78bc","Bluetiful":"196dea","Dark Cornflower Blue":"0a4091"}
