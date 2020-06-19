@@ -54,6 +54,10 @@ const failable = (req, res, next) => {
 		fail(res, e);
 	}
 }
+const logger = (req, res, next) => {
+	console.log(req.url);
+	next();
+}
 
 
 polka() // You can also use Express
@@ -62,7 +66,7 @@ polka() // You can also use Express
 		keys: [SESSION_KEY],
 		secure: !dev,
 		sameSite: "strict"
-	}))
+	}), logger)
 
 	.post('/login', [bodyParser.urlencoded({extended: false}), check('credential').isString()], async (req, res) => {
 		try {
@@ -93,12 +97,40 @@ polka() // You can also use Express
 			<title>Sign Into CourseRate</title>
 		</head>
 		<body>
+			<i>If the One Tap sign-in box doesn't show up...</i>
+			<a href="/login">sign in manually</a>
 			<div id="g_id_onload"
 				data-client_id="938003961167-i6pfeu8n7acup9h26sk3mik23bm3q9ok.apps.googleusercontent.com"
 				data-login_uri="/login">
 			</div>
 			<script src="https://accounts.google.com/gsi/client" async defer></script>
 		
+		</body>
+		</html>`);
+	})
+
+	.get('/login', async (req, res) => {
+		res.end(`<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta name="google-signin-client_id" content="938003961167-i6pfeu8n7acup9h26sk3mik23bm3q9ok.apps.googleusercontent.com">
+			<title>Sign Into CourseRate</title>
+		</head>
+		<body>
+			<div class="g-signin2" data-onsuccess="onSignIn"></div>
+			<form id="form" method="POST" action="/login">
+				<input type="hidden" id="credential" name="credential">
+			</form>
+			<script src="https://apis.google.com/js/platform.js" async defer></script>
+			<script>
+				function onSignIn(user) {
+					const token = user.getAuthResponse().id_token;
+					document.querySelector('#credential').value = token;
+					document.forms[0].submit();
+				}
+			</script>
 		</body>
 		</html>`);
 	})

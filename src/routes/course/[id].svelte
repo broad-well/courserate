@@ -1,5 +1,5 @@
 
-    <div class="course-hero">
+<div class="course-hero">
     {#if course == undefined}
     Loading... Hold tight!
     {:else}
@@ -122,7 +122,10 @@
                 s.me.coursesTaken[course.id] = {level};
                 return s;
             }))
-            .then(() => course = course);
+            .then(() => {
+                course.student_count++;
+                course = course;
+            });
     }
     function submitReview(content) {
         post('/api/review/add', {course_id: course.id, content: content})
@@ -164,5 +167,8 @@
         position: absolute;
         right: 15px;
         bottom: -24px;
+    }
+    .reviews {
+        margin-top: 30px;
     }
 </style>
