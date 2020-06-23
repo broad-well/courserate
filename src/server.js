@@ -89,7 +89,6 @@ polka() // You can also use Express
 	})
 
 	.get('/welcome', async (req, res) => {
-		// TODO local file?
 		res.end(fs.readFileSync('static/welcome.html', 'utf-8'));
 	})
 
