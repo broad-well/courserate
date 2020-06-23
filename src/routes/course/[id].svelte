@@ -62,8 +62,6 @@
 <ErrorSnackbar error={error} bind:this={errorBar} />
 
 <script context="module">
-
-
     export async function preload(page, session) {
         return page.params;
     }
@@ -130,6 +128,7 @@
     function submitReview(content) {
         post('/api/review/add', {course_id: course.id, content: content})
             .then(response => {
+                reviewText.value = '';
                 reviews = [response, ...reviews];
                 state.update(s => {
                     s.me.reviews.push(response.id);

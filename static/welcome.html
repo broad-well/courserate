@@ -1,15 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CourseRate - Welcome</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/1.4.6/tailwind.min.css">
+    <link rel="stylesheet" href="welcome.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,700;1,400&display=swap">
 </head>
+
 <body>
-    <!-- 1. Discover your next course. Make more informed decisions using reviews from experienced course alumni. 
-    3. Diagram: Alumni -> Review <- Interested Student 4. You pick the best reviews. (upvote / downvote system, like Reddit)
-    5. All reviews stay anonymous. (privacy, focus on the content, not the author).
-    6. Schools supported; coming to your school (form to ask);
-    7. Terms and Privacy Policy -->
+    <nav class="w-full bg-secondary text-white flex">
+        <h3 class="text-2xl m-5">CourseRate</h3>
+    </nav>
+    <section class="bg-primary">
+        <div class="flex flex-col" style="max-width: 500px">
+
+            <h2 class="text-4xl leading-10 my-4">
+                Discover your next course.
+            </h2>
+            <h5 class="text-gray-300 leading-6 text-xl m-0">
+                Make informed decisions on course selections and expectations with insights from experienced alumni.
+            </h5>
+            <div class="text-center md:text-left mt-6">
+                <button class="bg-secondary">Get Started</button>
+            </div>
+        </div>
+        <img class="side-img m-2" id="glance-img" src="https://nsominex.sirv.com/Images/Glance%20Interface.png" alt="CourseRate main interface" />
+    </section>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 280">
+        <path fill="#196DEA" fill-opacity="1"
+            d="M0,224L80,208C160,192,320,160,480,160C640,160,800,192,960,192C1120,192,1280,160,1360,144L1440,128L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z">
+        </path>
+    </svg>
+    <section>
+        <div class="flex flex-col p-4 ml-4 mr-6" style="max-width: 500px;">
+            <h2 class="text-3xl leading-9 mb-4">
+                It's like Reddit, but for your courses.
+            </h2>
+            <h5 class="text-gray-700 leading-6 text-xl mb-2">
+                Here's how it works:
+            </h5>
+            <ol class="list-decimal md:text-lg">
+                <li>Experienced alumni review a course and offer advice for future students</li>
+                <li>Students at your school upvote and downvote existing reviews</li>
+                <li>Anyone can read the top reviews for any course, curated by their peers</li>
+            </ol>
+        </div>
+        <img class="side-img" src="https://nsominex.sirv.com/Images/How%20CourseRate%20works.png"
+            alt="CourseRate: Write, read, and vote on reviews"/>
+
+    </section>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 280">
+        <path fill="#4B78BC" fill-opacity="1"
+            d="M0,192L80,170.7C160,149,320,107,480,80C640,53,800,43,960,53.3C1120,64,1280,96,1360,112L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z">
+        </path>
+    </svg>
+    <section style="background-color: #4B78BC; color: white;">
+        <div class="flex flex-col p-4 ml-4 mr-6" style="max-width: 500px;">
+            <h2 class="text-3xl leading-9 mb-4">
+                You pick the best reviews.
+            </h2>
+            <h5 class="text-gray-400 leading-7 text-2xl m-0">
+                Students upvote and downvote existing reviews based on quality. The best-rated reviews rise to the
+                top.
+            </h5>
+            <p class="mt-6 md:text-lg">
+                We prioritize quality over controversy. Downvotes are considered as serious expressions of dissatisfaction
+                and are much more detrimental to review rankings than upvotes are beneficial to them.
+            </p>
+        </div>
+        <img class="m-5 side-img" src="https://nsominex.sirv.com/Images/UpvoteDownvote%402x.png"
+            alt="CourseRate reviews receive votes" />
+    </section>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 280">
+        <path fill="#4B78BC" fill-opacity="1"
+            d="M0,160L60,144C120,128,240,96,360,90.7C480,85,600,107,720,128C840,149,960,171,1080,192C1200,213,1320,235,1380,245.3L1440,256L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z">
+        </path>
+    </svg>
+    <section class="flex flex-col justify-center text-center p-5">
+        <h2 class="text-3xl leading-9 mb-4">
+            All reviews stay anonymous.
+        </h2>
+        <h5 class="text-gray-700 leading-6 text-xl m-0">
+            Review your courses without worrying about your identity. Let's focus on the courses, not the authors.
+        </h5>
+    </section>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 220"><path fill="#196DEA" fill-opacity="1" d="M0,128L80,128C160,128,320,128,480,117.3C640,107,800,85,960,80C1120,75,1280,85,1360,90.7L1440,96L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path></svg>
+    <section class="bg-primary text-white">
+        <div class="flex flex-col p-4 ml-4 mr-6" style="max-width: 500px;">
+            <h2 class="text-3xl leading-9 mb-4">
+                Bring it to your school!
+            </h2>
+            <h5 class="text-gray-400 leading-6 text-xl m-0">
+                CourseRate is flexible enough to support any school with courses. All we need is your school's email domain
+                and a table of courses. To add your school's courses to CourseRate, let us know.
+            </h5>
+            <div class="mt-4">
+                <button class="bg-secondary">Contact Us</button>
+            </div>
+        </div>
+        
+        <div class="m-1 text-white text-left">
+            <h2 class="text-xl mb-2">
+                🏫 Schools Supported
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                <div class="py-2 px-4 m-2 rounded-full" style="background-color: rgba(0, 0, 0, 0.4)">Andover High School</div>
+                <div class="py-2 px-4 m-2 rounded-full opacity-50" style="background-color: rgba(0, 0, 0, 0.4)"><em>Your school here...</em>
+                </div>
+            </div>
+        </div>
+    </section>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 170"><path fill="#196DEA" fill-opacity="1" d="M0,160L80,144C160,128,320,96,480,90.7C640,85,800,107,960,106.7C1120,107,1280,85,1360,74.7L1440,64L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z"></path></svg>
+    <section class="flex flex-col md:flex-row justify-between">
+        <h2 class="m-0 p-2 text-xl">Legal Paperwork</h2>
+        <div class="flex flex-row text-white justify-center">
+            <button class="bg-primary">Terms of Use</button>
+            <button class="bg-primary">Privacy Policy</button>
+        </div>
+    </section>
+    <footer class="bg-black text-center p-3 text-white text-large flex flex-col md:flex-row justify-between">
+        <span>Made with 💙 by <a class="link" href="https://broaderator.com">Michael</a> in 🌎Andover, MA</span>
+        <div>
+            <a class="link" href="https://github.com/broad-well/courserate">GitHub</a> &nbsp;
+            <a class="link" href="mailto:michael@mcmoo.org">Contact</a> &nbsp;
+            &copy; 2020
+        </div>
+    </footer>
 </body>
+
 </html>

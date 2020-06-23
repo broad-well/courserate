@@ -5,6 +5,7 @@ import * as sapper from '@sapper/server';
 import bodyParser from 'body-parser';
 import cookieSession from 'cookie-session';
 import redirect from '@polka/redirect';
+import fs from 'fs';
 
 // wiring
 import GoogleAuth from './server/auth.google';
@@ -89,24 +90,7 @@ polka() // You can also use Express
 
 	.get('/welcome', async (req, res) => {
 		// TODO local file?
-		res.end(`<!DOCTYPE html>
-		<html lang="en">
-		<head>
-			<meta charset="UTF-8">
-			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<title>Sign Into CourseRate</title>
-		</head>
-		<body>
-			<i>If the One Tap sign-in box doesn't show up...</i>
-			<a href="/login">sign in manually</a>
-			<div id="g_id_onload"
-				data-client_id="938003961167-i6pfeu8n7acup9h26sk3mik23bm3q9ok.apps.googleusercontent.com"
-				data-login_uri="/login">
-			</div>
-			<script src="https://accounts.google.com/gsi/client" async defer></script>
-		
-		</body>
-		</html>`);
+		res.end(fs.readFileSync('static/welcome.html', 'utf-8'));
 	})
 
 	.get('/login', async (req, res) => {
