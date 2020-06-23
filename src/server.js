@@ -225,9 +225,9 @@ polka() // You can also use Express
 	})
 
 	.use(
-		requiresLogin,
 		compression({ threshold: 0 }),
 		sirv('static', { dev }),
+		requiresLogin,
 		sapper.middleware()
 	)
 	.listen(PORT, err => {
